@@ -16,9 +16,9 @@ const ReportHeader = ({ schoolData, studentData, attendanceData, date, code }) =
       </div>
       
       {/* School Header */}
-      <div className="flex flex-col md:flex-row items-center mb-2">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-2">
         {/* School Logo */}
-        <div className="w-20 h-20 md:mr-4 flex-shrink-0">
+        <div className="w-16 h-16 md:w-20 md:h-20 md:mr-4 flex-shrink-0">
           <img 
             src={schoolData.logo || "/placeholder.svg"} 
             alt={`${schoolData.name} Logo`} 
@@ -26,9 +26,9 @@ const ReportHeader = ({ schoolData, studentData, attendanceData, date, code }) =
           />
         </div>
         
-        {/* School Info */}
-        <div className="text-center md:text-left flex-grow">
-          <h1 className="text-xl md:text-3xl font-bold tracking-tight">{schoolData.name}</h1>
+        {/* School Info - Now properly centered */}
+        <div className="text-center flex-grow mx-auto">
+          <h1 className="text-lg md:text-2xl lg:text-3xl font-bold tracking-tight">{schoolData.name}</h1>
           <p className="text-xs md:text-sm opacity-90">{schoolData.location}</p>
           <p className="text-xs md:text-sm italic">Motto: {schoolData.motto}</p>
           <p className="text-xs opacity-80">
@@ -37,7 +37,7 @@ const ReportHeader = ({ schoolData, studentData, attendanceData, date, code }) =
         </div>
         
         {/* Student Photo (placeholder) */}
-        <div className="w-20 h-20 bg-gray-200 rounded overflow-hidden hidden md:block">
+        <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded overflow-hidden hidden md:block flex-shrink-0">
           <div className="w-full h-full flex items-center justify-center bg-report-accent/30">
             <span className="text-report-dark text-xs">Photo</span>
           </div>
@@ -46,7 +46,7 @@ const ReportHeader = ({ schoolData, studentData, attendanceData, date, code }) =
       
       {/* Report Title */}
       <div className="text-center py-1 border-t border-b border-white/30">
-        <h2 className="text-xl md:text-2xl font-semibold tracking-wide animate-pulse-soft">
+        <h2 className="text-lg md:text-xl lg:text-2xl font-semibold tracking-wide animate-pulse-soft">
           NURSERY REPORT SHEET
         </h2>
       </div>

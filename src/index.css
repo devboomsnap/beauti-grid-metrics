@@ -80,6 +80,16 @@
     @apply text-xs md:text-sm px-1 py-1 border border-gray-300 text-center;
   }
   
+  .report-table.text-xxs th,
+  .report-table.text-xxs td {
+    @apply text-[0.65rem] px-[0.15rem] py-[0.15rem];
+  }
+  
+  .report-table.text-xs th,
+  .report-table.text-xs td {
+    @apply text-[0.75rem] px-[0.25rem] py-[0.25rem];
+  }
+  
   .report-table tr:nth-child(even) {
     @apply bg-gray-50;
   }
@@ -91,7 +101,7 @@
   .download-btn {
     @apply fixed top-4 right-4 z-10 bg-report-blue hover:bg-report-dark text-white rounded-lg px-4 py-2 
     shadow-lg transition-all duration-300 flex items-center gap-2 
-    hover:scale-105 active:scale-95;
+    hover:scale-105 active:scale-95 disabled:opacity-70 disabled:hover:scale-100;
   }
   
   .print-only {
