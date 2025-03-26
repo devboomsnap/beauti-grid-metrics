@@ -134,12 +134,37 @@
   }
 }
 
-/* Generate animation delays for cells */
-@for $i from 1 through 30 {
-  .cell-animate-delay-#{$i} {
-    animation-delay: #{$i * 0.03}s;
-  }
-}
+/* Animation delays for cells - manual definition instead of Sass loop */
+.cell-animate-delay-1 { animation-delay: 0.03s; }
+.cell-animate-delay-2 { animation-delay: 0.06s; }
+.cell-animate-delay-3 { animation-delay: 0.09s; }
+.cell-animate-delay-4 { animation-delay: 0.12s; }
+.cell-animate-delay-5 { animation-delay: 0.15s; }
+.cell-animate-delay-6 { animation-delay: 0.18s; }
+.cell-animate-delay-7 { animation-delay: 0.21s; }
+.cell-animate-delay-8 { animation-delay: 0.24s; }
+.cell-animate-delay-9 { animation-delay: 0.27s; }
+.cell-animate-delay-10 { animation-delay: 0.30s; }
+.cell-animate-delay-11 { animation-delay: 0.33s; }
+.cell-animate-delay-12 { animation-delay: 0.36s; }
+.cell-animate-delay-13 { animation-delay: 0.39s; }
+.cell-animate-delay-14 { animation-delay: 0.42s; }
+.cell-animate-delay-15 { animation-delay: 0.45s; }
+.cell-animate-delay-16 { animation-delay: 0.48s; }
+.cell-animate-delay-17 { animation-delay: 0.51s; }
+.cell-animate-delay-18 { animation-delay: 0.54s; }
+.cell-animate-delay-19 { animation-delay: 0.57s; }
+.cell-animate-delay-20 { animation-delay: 0.60s; }
+.cell-animate-delay-21 { animation-delay: 0.63s; }
+.cell-animate-delay-22 { animation-delay: 0.66s; }
+.cell-animate-delay-23 { animation-delay: 0.69s; }
+.cell-animate-delay-24 { animation-delay: 0.72s; }
+.cell-animate-delay-25 { animation-delay: 0.75s; }
+.cell-animate-delay-26 { animation-delay: 0.78s; }
+.cell-animate-delay-27 { animation-delay: 0.81s; }
+.cell-animate-delay-28 { animation-delay: 0.84s; }
+.cell-animate-delay-29 { animation-delay: 0.87s; }
+.cell-animate-delay-30 { animation-delay: 0.90s; }
 
 /* Custom watermark style */
 .watermark {
