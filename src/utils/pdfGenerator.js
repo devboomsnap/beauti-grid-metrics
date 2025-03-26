@@ -1,3 +1,4 @@
+
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -23,38 +24,73 @@ export const generatePDF = async () => {
       if (el && el.style) el.style.display = 'block';
     });
     
-    // Apply white background to ensure no transparency
+    // Force solid backgrounds to ensure nothing looks faded
     reportClone.style.backgroundColor = 'white';
+    reportClone.style.color = 'black';
+    
+    // Force all text elements to have maximum opacity
+    const allTextElements = reportClone.querySelectorAll('*');
+    allTextElements.forEach(el => {
+      if (el.style) {
+        el.style.opacity = '1';
+        // Ensure all text has good contrast
+        if (el.tagName === 'TD' || el.tagName === 'TH' || 
+            el.tagName === 'P' || el.tagName === 'DIV' || 
+            el.tagName === 'SPAN' || el.tagName === 'H1' || 
+            el.tagName === 'H2' || el.tagName === 'H3') {
+          if (!el.style.color || el.style.color === 'rgba(0, 0, 0, 0)') {
+            el.style.color = '#000000';
+          }
+          // Increase font weight for better visibility in PDF
+          if (el.style.fontWeight === '' || parseInt(el.style.fontWeight) < 400) {
+            el.style.fontWeight = '400';
+          }
+        }
+      }
+    });
     
     // Find header and ensure its background color is applied
     const reportHeader = reportClone.querySelector('.report-header');
     if (reportHeader) {
-      reportHeader.style.backgroundColor = '#2471A3'; // Match the blue background shown in image
+      reportHeader.style.backgroundColor = '#2471A3'; // Match the blue background
       reportHeader.style.color = 'white';
+      reportHeader.style.fontWeight = 'bold';
     }
 
-    // Ensure all cells have visible borders and proper backgrounds
+    // Ensure all table cells have visible borders and proper backgrounds
     const tableCells = reportClone.querySelectorAll('td, th');
     tableCells.forEach(cell => {
       if (cell && cell.style) {
-        cell.style.border = '1px solid #ddd';
+        cell.style.border = '1px solid #000';
+        cell.style.boxShadow = 'inset 0 0 0 1px #ddd';
+        cell.style.backgroundColor = cell.style.backgroundColor || '#ffffff';
+        cell.style.color = cell.style.color || '#000000';
       }
     });
     
-    // Apply styles to make grades and data clearer
+    // Special styling for grades to make them stand out
     const gradeElements = reportClone.querySelectorAll('.report-table td');
     gradeElements.forEach(cell => {
-      if (cell && cell.textContent.trim() === 'A1') {
-        cell.style.color = '#00a651'; // Make A1 grades green
-        cell.style.fontWeight = 'bold';
+      if (cell && cell.textContent) {
+        const text = cell.textContent.trim();
+        if (text === 'A1') {
+          cell.style.color = '#00a651'; // Make A1 grades green
+          cell.style.fontWeight = 'bold';
+        } else if (text.startsWith('A') || text === 'EXCELLENT') {
+          cell.style.color = '#008000'; // Green for excellent grades
+          cell.style.fontWeight = 'bold';
+        } else if (text.startsWith('F') || text === 'FAIL') {
+          cell.style.color = '#ff0000'; // Red for failing grades
+          cell.style.fontWeight = 'bold';
+        }
       }
     });
     
-    // Ensure background colors on data tables
+    // Ensure background colors on data tables with stronger colors
     const tableRows = reportClone.querySelectorAll('.report-table tr:nth-child(even)');
     tableRows.forEach(row => {
       if (row && row.style) {
-        row.style.backgroundColor = '#f8f9fa'; // Ensure alternating rows have visible background
+        row.style.backgroundColor = '#e6e6e6'; // Darker background for even rows
       }
     });
     
@@ -65,11 +101,11 @@ export const generatePDF = async () => {
       
       // Apply dynamic font sizing
       if (columnCount > 20) {
-        if (reportClone.style) reportClone.style.fontSize = '0.65rem';
+        if (reportClone.style) reportClone.style.fontSize = '0.7rem';
       } else if (columnCount > 15) {
-        if (reportClone.style) reportClone.style.fontSize = '0.75rem';
-      } else if (columnCount > 10) {
         if (reportClone.style) reportClone.style.fontSize = '0.8rem';
+      } else if (columnCount > 10) {
+        if (reportClone.style) reportClone.style.fontSize = '0.85rem';
       }
     }
     
@@ -85,7 +121,7 @@ export const generatePDF = async () => {
     
     // Generate canvas from the cloned element with improved settings
     const canvas = await html2canvas(reportClone, {
-      scale: 4, // Higher scale for better quality (increased from 3)
+      scale: 5, // Higher scale for best quality (increased from 4)
       useCORS: true,
       allowTaint: true,
       logging: false,
@@ -98,16 +134,29 @@ export const generatePDF = async () => {
         tables.forEach(table => {
           table.style.borderCollapse = 'collapse';
           table.style.width = '100%';
+          table.style.border = '2px solid #000';
         });
         
-        // Ensure all text is properly visible with good contrast
-        const allTextElements = element.querySelectorAll('td, th, p, h1, h2, h3, div');
-        allTextElements.forEach(el => {
+        // Force maximum contrast for all text elements
+        const allElements = element.querySelectorAll('*');
+        allElements.forEach(el => {
           if (el.style) {
-            // Keep color if it exists, otherwise ensure dark text
-            if (!el.style.color) el.style.color = '#000000';
-            // Ensure text doesn't appear faded
             el.style.opacity = '1';
+            
+            // Ensure headers and cells have proper styling
+            if (el.tagName === 'TH') {
+              el.style.backgroundColor = '#e6f2ff';
+              el.style.color = '#000000';
+              el.style.fontWeight = 'bold';
+              el.style.border = '1px solid #000';
+            }
+            
+            if (el.tagName === 'TD') {
+              if (!el.style.color || el.style.color === 'rgba(0, 0, 0, 0)') {
+                el.style.color = '#000000';
+              }
+              el.style.border = '1px solid #000';
+            }
           }
         });
       }
@@ -120,12 +169,12 @@ export const generatePDF = async () => {
     // Set orientation based on content
     const orientation = isLandscape ? 'landscape' : 'portrait';
     
-    // Create PDF document with proper orientation and better quality settings
+    // Create PDF document with proper orientation and high quality settings
     const pdf = new jsPDF({
       orientation: orientation, 
       unit: 'mm', 
       format: 'a4',
-      compress: true,
+      compress: false, // Disable compression for better quality
       hotfixes: ["px_scaling"]
     });
     
@@ -141,7 +190,7 @@ export const generatePDF = async () => {
     let heightLeft = imgHeight;
     let position = 5; // Start position with smaller margin
     
-    // First page - using higher quality settings
+    // First page - using highest quality settings
     pdf.addImage(
       canvas.toDataURL('image/png', 1.0), // Use highest quality
       'PNG',
