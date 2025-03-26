@@ -9,10 +9,19 @@ const DownloadButton = () => {
   const { toast } = useToast();
   
   const handleDownload = async () => {
-    if (isGenerating) return; // Prevent multiple clicks
+    // Prevent multiple clicks
+    if (isGenerating) return;
     
     setIsGenerating(true);
+    toast({
+      title: "Processing",
+      description: "Generating PDF, please wait...",
+      variant: "default",
+    });
+    
     try {
+      // Add a slight delay to ensure toast is shown
+      await new Promise(resolve => setTimeout(resolve, 300));
       await generatePDF();
       toast({
         title: "Success",
