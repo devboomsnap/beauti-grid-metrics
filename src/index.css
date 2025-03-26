@@ -73,21 +73,27 @@
   }
   
   .report-table th {
-    @apply bg-report-blue/10 text-report-dark font-medium text-xs md:text-sm px-1 py-2 border border-gray-300;
+    @apply bg-report-blue/10 text-report-dark font-medium px-1 py-2 border border-gray-300;
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
   
   .report-table td {
-    @apply text-xs md:text-sm px-1 py-1 border border-gray-300 text-center;
+    @apply px-1 py-1 border border-gray-300 text-center;
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
   
   .report-table.text-xxs th,
   .report-table.text-xxs td {
-    @apply text-[0.65rem] px-[0.15rem] py-[0.15rem];
+    font-size: 0.65rem;
+    padding: 0.15rem;
   }
   
   .report-table.text-xs th,
   .report-table.text-xs td {
-    @apply text-[0.75rem] px-[0.25rem] py-[0.25rem];
+    font-size: 0.75rem;
+    padding: 0.25rem;
   }
   
   .report-table tr:nth-child(even) {
