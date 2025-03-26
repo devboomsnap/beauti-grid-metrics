@@ -1,4 +1,3 @@
-
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -24,7 +23,7 @@ export const generatePDF = async () => {
       if (el && el.style) el.style.display = 'block';
     });
     
-    // Ensure all background colors and gradients are preserved
+    // Apply white background to ensure no transparency
     reportClone.style.backgroundColor = 'white';
     
     // Find header and ensure its background color is applied
@@ -34,11 +33,28 @@ export const generatePDF = async () => {
       reportHeader.style.color = 'white';
     }
 
-    // Ensure table cells have visible borders
+    // Ensure all cells have visible borders and proper backgrounds
     const tableCells = reportClone.querySelectorAll('td, th');
     tableCells.forEach(cell => {
       if (cell && cell.style) {
         cell.style.border = '1px solid #ddd';
+      }
+    });
+    
+    // Apply styles to make grades and data clearer
+    const gradeElements = reportClone.querySelectorAll('.report-table td');
+    gradeElements.forEach(cell => {
+      if (cell && cell.textContent.trim() === 'A1') {
+        cell.style.color = '#00a651'; // Make A1 grades green
+        cell.style.fontWeight = 'bold';
+      }
+    });
+    
+    // Ensure background colors on data tables
+    const tableRows = reportClone.querySelectorAll('.report-table tr:nth-child(even)');
+    tableRows.forEach(row => {
+      if (row && row.style) {
+        row.style.backgroundColor = '#f8f9fa'; // Ensure alternating rows have visible background
       }
     });
     
@@ -69,7 +85,7 @@ export const generatePDF = async () => {
     
     // Generate canvas from the cloned element with improved settings
     const canvas = await html2canvas(reportClone, {
-      scale: 3, // Higher scale for better quality
+      scale: 4, // Higher scale for better quality (increased from 3)
       useCORS: true,
       allowTaint: true,
       logging: false,
@@ -83,6 +99,17 @@ export const generatePDF = async () => {
           table.style.borderCollapse = 'collapse';
           table.style.width = '100%';
         });
+        
+        // Ensure all text is properly visible with good contrast
+        const allTextElements = element.querySelectorAll('td, th, p, h1, h2, h3, div');
+        allTextElements.forEach(el => {
+          if (el.style) {
+            // Keep color if it exists, otherwise ensure dark text
+            if (!el.style.color) el.style.color = '#000000';
+            // Ensure text doesn't appear faded
+            el.style.opacity = '1';
+          }
+        });
       }
     });
     
@@ -93,7 +120,7 @@ export const generatePDF = async () => {
     // Set orientation based on content
     const orientation = isLandscape ? 'landscape' : 'portrait';
     
-    // Create PDF document with proper orientation
+    // Create PDF document with proper orientation and better quality settings
     const pdf = new jsPDF({
       orientation: orientation, 
       unit: 'mm', 
@@ -114,7 +141,7 @@ export const generatePDF = async () => {
     let heightLeft = imgHeight;
     let position = 5; // Start position with smaller margin
     
-    // First page
+    // First page - using higher quality settings
     pdf.addImage(
       canvas.toDataURL('image/png', 1.0), // Use highest quality
       'PNG',
