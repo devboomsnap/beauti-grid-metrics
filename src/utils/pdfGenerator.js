@@ -7,23 +7,22 @@ export const generatePDF = async () => {
   const reportElement = document.getElementById('report-card');
   if (!reportElement) return;
   
-  // Add loading state
-  const downloadButton = document.querySelector('.download-btn');
-  const originalButtonText = downloadButton.innerHTML;
-  downloadButton.innerHTML = '<span class="animate-pulse">Generating PDF...</span>';
+  // Create a deep clone of the report card for PDF generation
+  const reportClone = reportElement.cloneNode(true);
+  reportClone.classList.add('print-mode');
   
   try {
-    // Create a clone of the report card for PDF generation
-    const reportClone = reportElement.cloneNode(true);
-    reportClone.classList.add('print-mode');
-    
     // Hide elements that shouldn't be in the PDF
     const noPrintElements = reportClone.querySelectorAll('.no-print');
-    noPrintElements.forEach(el => el.style.display = 'none');
+    noPrintElements.forEach(el => {
+      if (el && el.style) el.style.display = 'none';
+    });
     
     // Show elements that should only be in the PDF
     const printOnlyElements = reportClone.querySelectorAll('.print-only');
-    printOnlyElements.forEach(el => el.style.display = 'block');
+    printOnlyElements.forEach(el => {
+      if (el && el.style) el.style.display = 'block';
+    });
     
     // Dynamic font sizing based on number of columns
     const tableElement = reportClone.querySelector('.report-table');
@@ -33,19 +32,24 @@ export const generatePDF = async () => {
       // Apply dynamic font sizing
       if (columnCount > 20) {
         tableElement.classList.add('text-xxs'); // Extra small font
-        reportClone.style.fontSize = '0.65rem';
+        if (reportClone.style) reportClone.style.fontSize = '0.65rem';
       } else if (columnCount > 15) {
         tableElement.classList.add('text-xs'); // Small font
-        reportClone.style.fontSize = '0.75rem';
+        if (reportClone.style) reportClone.style.fontSize = '0.75rem';
       } else if (columnCount > 10) {
-        reportClone.style.fontSize = '0.8rem';
+        if (reportClone.style) reportClone.style.fontSize = '0.8rem';
       }
     }
     
-    // Append to document temporarily (off-screen)
-    reportClone.style.position = 'absolute';
-    reportClone.style.left = '-9999px';
-    document.body.appendChild(reportClone);
+    // Create a temporary container and append clone to document (off-screen)
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.height = 'auto';
+    tempContainer.style.width = 'auto';
+    tempContainer.appendChild(reportClone);
+    
+    document.body.appendChild(tempContainer);
     
     // Generate canvas from the cloned element
     const canvas = await html2canvas(reportClone, {
@@ -117,20 +121,19 @@ export const generatePDF = async () => {
     // Save the PDF
     pdf.save(filename);
     
-    // Clean up
-    document.body.removeChild(reportClone);
+    // Clean up - properly remove from DOM
+    if (tempContainer && document.body.contains(tempContainer)) {
+      document.body.removeChild(tempContainer);
+    }
     
-    // Restore button text with success message
-    downloadButton.innerHTML = '<span class="text-green-50">PDF Downloaded!</span>';
-    setTimeout(() => {
-      downloadButton.innerHTML = originalButtonText;
-    }, 2000);
-    
+    return true; // Return success
   } catch (error) {
     console.error('Error generating PDF:', error);
-    downloadButton.innerHTML = '<span class="text-red-50">Error! Try again</span>';
-    setTimeout(() => {
-      downloadButton.innerHTML = originalButtonText;
-    }, 2000);
+    // Clean up in case of error
+    const tempContainer = document.querySelector('div[style*="-9999px"]');
+    if (tempContainer && document.body.contains(tempContainer)) {
+      document.body.removeChild(tempContainer);
+    }
+    throw error; // Rethrow to allow the component to handle the error
   }
 };
