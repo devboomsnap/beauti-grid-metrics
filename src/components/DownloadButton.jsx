@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
 import { generatePDF } from '../utils/pdfGenerator';
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "../hooks/use-toast";
 
 const DownloadButton = () => {
   const [isGenerating, setIsGenerating] = useState(false);

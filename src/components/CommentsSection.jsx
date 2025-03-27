@@ -1,62 +1,97 @@
 
 import React from 'react';
 
-const CommentsSection = ({ comments, decision, nextTerm }) => {
+const CommentsSection = ({ comments, decision, nextTerm, classTeacher, resultData, school }) => {
   return (
-    <div className="print:break-inside-avoid my-3 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-      <div className="border border-gray-300 rounded overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-300">
-          <div className="p-3">
-            <div className="text-sm font-medium mb-1">Form Teacher's Comments:</div>
-            <div className="pl-2 italic text-gray-700">{comments.formTeacher}</div>
-          </div>
-          <div className="p-3">
-            <div className="text-sm font-medium mb-1">Head Master's Comments:</div>
-            <div className="pl-2 italic text-gray-700">{comments.headMaster}</div>
-          </div>
+    <div className="print:break-inside-avoid my-3">
+      <h3 className="text-lg font-semibold mb-2 bg-report-blue/10 py-1 px-2 rounded text-report-dark">
+        COMMENTS & DECISION
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Teacher's Comment */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+          <h4 className="font-medium text-report-dark mb-2">Class Teacher's Comment</h4>
+          <p className="text-gray-700">{comments?.teacherComment || 'No comment provided'}</p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 border-t border-gray-300">
-          <div className="p-3 border-b md:border-b-0 md:border-r border-gray-300">
-            <div className="text-sm font-medium mb-1">DECISION:</div>
-            <div className="text-center font-bold text-green-600">{decision}</div>
-          </div>
-          <div className="p-3 border-b md:border-b-0 md:border-r border-gray-300">
-            <div className="text-sm font-medium mb-1">RESUMPTION DATE FOR SECOND TERM:</div>
-            <div className="text-center font-medium">
-              {new Date(nextTerm.resumptionDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-              })}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 border-t md:border-t-0 border-gray-300">
-            <div className="p-3 border-r border-gray-300">
-              <div className="text-sm font-medium mb-1">NEXT TERM SCHOOL FEES:</div>
-              <div className="text-center">{nextTerm.fees}</div>
-            </div>
-            <div className="p-3">
-              <div className="text-sm font-medium mb-1">OTHER CHARGES:</div>
-              <div className="text-center">{nextTerm.otherCharges}</div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 border-t border-gray-300">
-          <div className="p-3 flex flex-col items-center justify-between border-r border-gray-300 min-h-[80px]">
-            <div className="text-sm font-medium">Head Master's Signature</div>
-            <div className="mt-2 italic text-xs text-gray-500">Signature</div>
-          </div>
-          <div className="p-3 flex flex-col items-center justify-between min-h-[80px]">
-            <div className="text-sm font-medium">School Stamp</div>
-            <div className="mt-2 italic text-xs text-gray-500">Stamp</div>
-          </div>
+
+        {/* Principal's Comment */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+          <h4 className="font-medium text-report-dark mb-2">Principal's Comment</h4>
+          <p className="text-gray-700">{comments?.principalComment || 'No comment provided'}</p>
         </div>
       </div>
-      
-      <div className="text-center text-xs text-gray-500 mt-2">
-        Developed by NGIT Software Solutions (www.ngit.com.ng)
+
+      {/* Next Term Date */}
+      <div className="mt-4 bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <h4 className="font-medium text-report-dark mb-2">Next Term Begins</h4>
+        <p className="text-gray-700">{nextTerm || 'Date not set'}</p>
+      </div>
+
+      {/* Signatures */}
+      <div className="mt-6 grid grid-cols-2 gap-4">
+        {/* Class Teacher Signature */}
+        <div className="text-center">
+          <div className="h-20 border-b border-gray-300 mb-2">
+            {resultData?.class?.teacher?.signature ? (
+              <img
+                src={resultData.class.teacher.signature.startsWith('data:image')
+                  ? resultData.class.teacher.signature
+                  : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${resultData.class.teacher.signature}`}
+                alt="Teacher's Signature"
+                className="w-full h-full object-contain"
+                crossOrigin="anonymous"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-gray-400">Signature</span>
+              </div>
+            )}
+          </div>
+          <p className="font-medium text-report-dark">Class Teacher</p>
+          <p className="text-sm text-gray-600">{classTeacher?.name || 'Teacher'}</p>
+        </div>
+
+        {/* Principal Signature */}
+        <div className="text-center">
+          <div className="h-20 border-b border-gray-300 mb-2">
+            {school?.principal_sign ? (
+              <img
+                src={school.principal_sign.startsWith('data:image')
+                  ? school.principal_sign
+                  : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${school.principal_sign}`}
+                alt="Principal's Signature"
+                className="w-full h-full object-contain"
+                crossOrigin="anonymous"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-gray-400">Signature</span>
+              </div>
+            )}
+          </div>
+          <p className="font-medium text-report-dark">Principal</p>
+        </div>
+      </div>
+
+      {/* School Stamp */}
+      <div className="mt-4 text-center">
+        <div className="h-24 mx-auto w-24 border rounded-full overflow-hidden">
+          {school?.school_stamp ? (
+            <img
+              src={school.school_stamp.startsWith('data:image')
+                ? school.school_stamp
+                : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${school.school_stamp}`}
+              alt="School Stamp"
+              className="w-full h-full object-contain"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <span className="text-gray-400 text-xs">School Stamp</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
