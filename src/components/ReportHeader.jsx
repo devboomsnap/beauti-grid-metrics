@@ -2,6 +2,14 @@
 import React from 'react';
 
 const ReportHeader = ({ school, student, attendance, date, code }) => {
+  // Helper function to handle image loading with proper attributes
+  const getImageSrc = (imagePath) => {
+    if (!imagePath) return null;
+    return imagePath.startsWith('data:image') 
+      ? imagePath 
+      : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${imagePath}`;
+  };
+
   return (
     <div className="report-header print:break-inside-avoid animate-fade-in">
       {/* Watermark - visible only on print */}
@@ -21,12 +29,14 @@ const ReportHeader = ({ school, student, attendance, date, code }) => {
         <div className="w-16 h-16 md:w-20 md:h-20 md:mr-4 flex-shrink-0 bg-white rounded-full overflow-hidden">
           {school.logo ? (
             <img 
-              src={school.logo.startsWith('data:image') 
-                ? school.logo 
-                : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${school.logo}`} 
+              src={getImageSrc(school.logo)}
               alt={`${school.name} Logo`} 
               className="w-full h-full object-contain"
               crossOrigin="anonymous"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOWE5YTlhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5Mb2dvPC90ZXh0Pjwvc3ZnPg==";
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -49,12 +59,14 @@ const ReportHeader = ({ school, student, attendance, date, code }) => {
         <div className="w-16 h-16 md:w-20 md:h-20 rounded overflow-hidden hidden md:block flex-shrink-0 bg-white">
           {student.data?.image ? (
             <img 
-              src={student.data.image.startsWith('data:image') 
-                ? student.data.image 
-                : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${student.data.image}`} 
+              src={getImageSrc(student.data.image)}
               alt="Student Photo" 
               className="w-full h-full object-cover"
               crossOrigin="anonymous"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOWE5YTlhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5QaG90bzwvdGV4dD48L3N2Zz4=";
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-100">

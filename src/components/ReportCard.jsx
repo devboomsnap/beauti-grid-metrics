@@ -7,9 +7,9 @@ import CommentsSection from './CommentsSection';
 import GradingInfo from './GradingInfo';
 import Psychomotor from './Psychomotor';
 
-const ReportCard = ({ data }) => {
+const ReportCard = ({ data, targetRef }) => {
   return (
-    <div id="report-card" className="report-container">
+    <div ref={targetRef} id="report-card" className="report-container">
       <ReportHeader
         school={data.school}
         student={data.student}

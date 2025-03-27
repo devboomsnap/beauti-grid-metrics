@@ -15,6 +15,23 @@ const Psychomotor = ({ psychomotorNormal }) => {
     return 'bg-red-50';
   };
 
+  // Helper to safely extract the rating
+  const getRating = (item) => {
+    // Check if the item has a direct rating property
+    if (item.rating !== undefined) return item.rating;
+    
+    // Check if there's a nested psychomotor_student array with ratings
+    if (item.psychomotor_student && 
+        Array.isArray(item.psychomotor_student) && 
+        item.psychomotor_student.length > 0 && 
+        item.psychomotor_student[0].rating !== undefined) {
+      return item.psychomotor_student[0].rating;
+    }
+    
+    // Default value if no rating found
+    return '-';
+  };
+
   return (
     <div className="print:break-inside-avoid my-3">
       <h3 className="text-lg font-semibold mb-2 bg-report-blue/10 py-1 px-2 rounded text-report-dark">
@@ -23,11 +40,7 @@ const Psychomotor = ({ psychomotorNormal }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {psychomotorNormal.map((item, index) => {
-          // Handle both direct rating or nested psychomotor_student
-          const rating = item.rating || 
-                         (item.psychomotor_student && 
-                          item.psychomotor_student[0] && 
-                          item.psychomotor_student[0].rating) || '-';
+          const rating = getRating(item);
           
           return (
             <div

@@ -11,6 +11,34 @@ export const generatePDF = async () => {
     // Create a deep clone of the report card for PDF generation
     const reportClone = reportElement.cloneNode(true);
     
+    // Force all images to load properly with crossOrigin attributes
+    const allImages = reportClone.querySelectorAll('img');
+    allImages.forEach(img => {
+      img.setAttribute('crossOrigin', 'anonymous');
+      
+      // Set proper error handling for images
+      img.onerror = function() {
+        this.onerror = null;
+        if (this.src.includes('schoolcompasse.s3.us-east-1.amazonaws.com')) {
+          // Try direct URL if S3 URL fails
+          const fileName = this.src.split('/').pop();
+          this.src = `https://schoolcompasse.s3.us-east-1.amazonaws.com/${fileName}`;
+        } else {
+          // Use placeholder if all attempts fail
+          this.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YwZjBmMCIvPjwvc3ZnPg==";
+        }
+      };
+      
+      // For Amazon S3 URLs, ensure they're properly loaded
+      if (img.src && img.src.includes('schoolcompasse.s3.us-east-1.amazonaws.com')) {
+        // Make a copy of the current source
+        const currentSrc = img.src;
+        // Set crossOrigin before setting src to avoid CORS issues
+        img.setAttribute('crossOrigin', 'anonymous');
+        img.src = currentSrc;
+      }
+    });
+    
     // Force all elements to have solid colors and full opacity
     function enforceVisibility(element) {
       if (element.style) {
@@ -74,17 +102,48 @@ export const generatePDF = async () => {
     // Apply visibility enforcement to all elements
     enforceVisibility(reportClone);
     
-    // Force image loading before canvas generation
+    // Force image loading before canvas generation by creating promises for each image
     const images = reportClone.querySelectorAll('img');
     const imagePromises = Array.from(images).map(img => {
+      // Make sure crossOrigin is set before loading
+      img.setAttribute('crossOrigin', 'anonymous');
+      
+      // For images that are already complete, resolve immediately
       if (img.complete) return Promise.resolve();
+      
+      // For images still loading, create a promise that resolves on load or error
       return new Promise(resolve => {
-        img.onload = resolve;
-        img.onerror = resolve; // Continue even if image fails
+        const originalSrc = img.src;
+        
+        img.onload = () => {
+          console.log(`Image loaded successfully: ${img.src}`);
+          resolve();
+        };
+        
+        img.onerror = () => {
+          console.error(`Failed to load image: ${originalSrc}, trying direct URL`);
+          // If loading from S3 fails, try a direct URL approach
+          if (originalSrc.includes('schoolcompasse.s3.us-east-1.amazonaws.com')) {
+            const fileName = originalSrc.split('/').pop();
+            img.src = `https://schoolcompasse.s3.us-east-1.amazonaws.com/${fileName}`;
+            // Resolve regardless - we'll use a placeholder if this also fails
+            setTimeout(resolve, 500);
+          } else {
+            // Use placeholder and resolve
+            img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YwZjBmMCIvPjwvc3ZnPg==";
+            resolve();
+          }
+        };
+        
+        // Trigger loading if needed by resetting the src
+        if (!img.complete) {
+          const currentSrc = img.src;
+          img.src = currentSrc;
+        }
       });
     });
     
-    // Wait for all images to be loaded
+    // Wait for all images to be processed
     await Promise.all(imagePromises);
     
     // Generate canvas with significantly increased quality settings
@@ -92,7 +151,7 @@ export const generatePDF = async () => {
       scale: 5, // Higher scale = better quality
       useCORS: true,
       allowTaint: true,
-      logging: false,
+      logging: true, // Enable logging for debugging
       backgroundColor: '#ffffff',
       imageTimeout: 15000, // Longer timeout for images
       removeContainer: false, // We'll handle removal

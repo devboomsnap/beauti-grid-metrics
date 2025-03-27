@@ -2,6 +2,14 @@
 import React from 'react';
 
 const CommentsSection = ({ comments, decision, nextTerm, classTeacher, resultData, school }) => {
+  // Helper function to handle image loading with proper attributes
+  const getImageSrc = (imagePath) => {
+    if (!imagePath) return null;
+    return imagePath.startsWith('data:image') 
+      ? imagePath 
+      : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${imagePath}`;
+  };
+
   return (
     <div className="print:break-inside-avoid my-3">
       <h3 className="text-lg font-semibold mb-2 bg-report-blue/10 py-1 px-2 rounded text-report-dark">
@@ -35,12 +43,14 @@ const CommentsSection = ({ comments, decision, nextTerm, classTeacher, resultDat
           <div className="h-20 border-b border-gray-300 mb-2">
             {resultData?.class?.teacher?.signature ? (
               <img
-                src={resultData.class.teacher.signature.startsWith('data:image')
-                  ? resultData.class.teacher.signature
-                  : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${resultData.class.teacher.signature}`}
+                src={getImageSrc(resultData.class.teacher.signature)}
                 alt="Teacher's Signature"
                 className="w-full h-full object-contain"
                 crossOrigin="anonymous"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iNDAiIGZpbGw9Im5vbmUiLz48dGV4dCB4PSI1MCIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzlhOWE5YSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+U2lnbmF0dXJlPC90ZXh0Pjwvc3ZnPg==";
+                }}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -57,12 +67,14 @@ const CommentsSection = ({ comments, decision, nextTerm, classTeacher, resultDat
           <div className="h-20 border-b border-gray-300 mb-2">
             {school?.principal_sign ? (
               <img
-                src={school.principal_sign.startsWith('data:image')
-                  ? school.principal_sign
-                  : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${school.principal_sign}`}
+                src={getImageSrc(school.principal_sign)}
                 alt="Principal's Signature"
                 className="w-full h-full object-contain"
                 crossOrigin="anonymous"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iNDAiIGZpbGw9Im5vbmUiLz48dGV4dCB4PSI1MCIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzlhOWE5YSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+U2lnbmF0dXJlPC90ZXh0Pjwvc3ZnPg==";
+                }}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -79,12 +91,14 @@ const CommentsSection = ({ comments, decision, nextTerm, classTeacher, resultDat
         <div className="h-24 mx-auto w-24 border rounded-full overflow-hidden">
           {school?.school_stamp ? (
             <img
-              src={school.school_stamp.startsWith('data:image')
-                ? school.school_stamp
-                : `https://schoolcompasse.s3.us-east-1.amazonaws.com/${school.school_stamp}`}
+              src={getImageSrc(school.school_stamp)}
               alt="School Stamp"
               className="w-full h-full object-contain"
               crossOrigin="anonymous"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2NjIiBzdHJva2Utd2lkdGg9IjEiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzlhOWE5YSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+U2Nob29sIFN0YW1wPC90ZXh0Pjwvc3ZnPg==";
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-100">
